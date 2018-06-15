@@ -28,6 +28,18 @@ new Vue({
                     Materialize.toast(msg.Raw.rejectReason, 2000);
                 }
             }
+            else if(msg.Type == "CreateRoomResponse")
+            {
+                if(msg.Raw.isCreated == true)
+                {
+                    self.rooms += '<li class="collection-item"><div>'+msg.Raw.roomName+'<a href="room" class="secondary-content"><i class="material-icons">meeting_room</i></a></div></li>'
+                }
+                else
+                {
+                    Materialize.toast(msg.Raw.rejectReason, 2000);
+                }
+
+            }
             // if (msg.type == 'message') {
             //     self.chatContent += '<div class="chip">'
             //     + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar

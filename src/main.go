@@ -106,10 +106,8 @@ func handleMessages() {
 			if wsMsg.Message.Type == "CreateRoomRequest" {
 				processCreateRoomRequest(wsMsg)
 			}
-		} else {
-			if wsMsg.Message.Type == "AuthRequest" {
-				processAuthRequest(wsMsg)
-			}
+		} else if wsMsg.Message.Type == "AuthRequest" {
+			processAuthRequest(wsMsg)
 		}
 	}
 }
@@ -136,5 +134,5 @@ func processCreateRoomRequest(wsMsg WebSocketMessage) {
 	}
 
 	roomsManager.AddRoom(request.RoomName)
-	roomsManager.SendResponse(true, wsMsg.fromWs)
+	roomsManager.SendResponse(true, request.RoomName, wsMsg.fromWs)
 }

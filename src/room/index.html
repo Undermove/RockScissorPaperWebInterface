@@ -6,6 +6,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
     <link rel="stylesheet" href="/style.css">
 
@@ -14,12 +15,25 @@
 <header>
     <nav>
         <div class="nav-wrapper">
-            <a href="/" class="brand-logo right">Room</a>
+            <a href="/" class="brand-logo center">Room: Room Name</a>
         </div>
     </nav>
 </header>
 <main id="app">
-   
+    <div class="row">
+        <div class="col s4"></div>
+        <div class="col s2">
+            <a class="collection-header"><h4>Your Score: 0</h4></a>
+            <a class="collection-header"><h4>Your Choise</h4></a>
+            <a class="btn-floating btn-large waves-effect waves-light red"><i class="fa fa-hand-scissors-o"></i></a>
+            <a class="btn-floating btn-large waves-effect waves-light red"><i class="fa fa-hand-rock-o"></i></a>
+            <a class="btn-floating btn-large waves-effect waves-light red"><i class="fa fa-hand-paper-o"></i></a>
+        </div>
+        <div class="col s2">
+            <a class="collection-header"><h4>Enemy Score: 0</h4></a>
+            <a class="collection-header"><h4>Enemy Choise</h4></a>
+            <a class="btn-floating btn-large waves-effect waves-light red" ><i class="fa fa-question"></i></a>
+        </div>
 </main>
 <footer class="page-footer">
 </footer>

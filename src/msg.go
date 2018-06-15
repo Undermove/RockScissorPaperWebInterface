@@ -29,5 +29,6 @@ type CreateRoomRequest struct {
 // Define our message object
 type CreateRoomResponse struct {
 	IsCreated    bool   `json:"isCreated"`
+	RoomName     string `json:"roomName"`
 	RejectReason string `json:"rejectReason"`
 }

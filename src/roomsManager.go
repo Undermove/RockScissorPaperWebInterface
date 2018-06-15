@@ -56,11 +56,12 @@ func NewRoomsManager(auth *AuthModule) *RoomsManager {
 	}
 }
 
-func (rm *RoomsManager) SendResponse(isSuccess bool, w *websocket.Conn) {
+func (rm *RoomsManager) SendResponse(isSuccess bool, roomName string, w *websocket.Conn) {
 	var response CreateRoomResponse
 
 	if isSuccess {
 		response = CreateRoomResponse{
+			RoomName:  roomName,
 			IsCreated: true,
 		}
 	} else {
@@ -95,6 +96,14 @@ func (rm *RoomsManager) EnterRoom(ws *websocket.Conn, roomName string) bool {
 	})
 
 	return false
+}
+
+func (rm *RoomsManager) LeaveRoom(ws *websocket.Conn, username string) bool {
+	if _, ok := rm.ConnToRooms[ws]; ok {
+		rm.ConnToRooms[ws].LeaveRoom(username)
+	}
+
+	return true
 }
 
 func (rm *RoomsManager) IsInRoom(ws *websocket.Conn) bool {

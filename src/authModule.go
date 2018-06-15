@@ -28,6 +28,7 @@ func (a *AuthModule) AddConnection(w *websocket.Conn) bool {
 
 func (a *AuthModule) Disconnect(w *websocket.Conn) {
 	username := a.Clients[w]
+	roomsManager.LeaveRoom(w, username)
 	delete(a.Clients, w)
 	delete(a.AuthClients, username)
 }
