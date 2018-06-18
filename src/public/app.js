@@ -7,7 +7,8 @@ new Vue({
         chatContent: '', // A running list of chat messages displayed on the screen
         username: null, // Our username
         joined: false, // True if email and username have been filled in
-        rooms: '',
+        inRoom: false,
+        rooms: [],
         newRoom: ''
     },
 
@@ -32,7 +33,8 @@ new Vue({
             {
                 if(msg.Raw.isCreated == true)
                 {
-                    self.rooms += '<li class="collection-item"><div>'+msg.Raw.roomName+'<a href="room" class="secondary-content"><i class="material-icons">meeting_room</i></a></div></li>'
+                    self.rooms.push(msg.Raw.roomName);
+                    //self.rooms += '<li class="collection-item"><div>'+msg.Raw.roomName+'<button @click.native="enterRoom(\''+msg.Raw.roomName+'\')">Перевернуть сообщение</button></div>';
                 }
                 else
                 {
@@ -108,5 +110,10 @@ new Vue({
 
             this.ws.send(JSON.stringify(wrappedAuthRequest));
         },
+
+        enterRoom:function (roomName){
+            Materialize.toast("Works! "+ roomName, 2000);
+            this.inRoom = !this.inRoom
+        }
     }
 });
