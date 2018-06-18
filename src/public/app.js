@@ -34,7 +34,6 @@ new Vue({
                 if(msg.Raw.isCreated == true)
                 {
                     self.rooms.push(msg.Raw.roomName);
-                    //self.rooms += '<li class="collection-item"><div>'+msg.Raw.roomName+'<button @click.native="enterRoom(\''+msg.Raw.roomName+'\')">Перевернуть сообщение</button></div>';
                 }
                 else
                 {
@@ -42,21 +41,6 @@ new Vue({
                 }
 
             }
-            // if (msg.type == 'message') {
-            //     self.chatContent += '<div class="chip">'
-            //     + '<img src="' + self.gravatarURL(msg.email) + '">' // Avatar
-            //     + msg.username
-            //     + '</div>'
-            //     + emojione.toImage(msg.message) + '<br/>'; // Parse emojis
-            //     var element = document.getElementById('chat-messages');
-            //     element.scrollTop = element.scrollHeight;
-            // } else if(msg.type == 'createRoom'){
-            //     //self.rooms += '<div class="chip">'+ 'Hello'+'</div>'
-            //     self.rooms += '<li class="collection-item"><div>'+msg.message+'<a href="room" class="secondary-content"><i class="material-icons">meeting_room</i></a></div></li>'
-    
-            //     var element = document.getElementById('rooms-list');
-            //     element.scrollTop = element.scrollHeight; // Auto scroll to the bottom
-            // }
         });
     },
     
@@ -112,8 +96,11 @@ new Vue({
         },
 
         enterRoom:function (roomName){
-            Materialize.toast("Works! "+ roomName, 2000);
-            this.inRoom = !this.inRoom
+            this.inRoom = true
+        },
+
+        leaveRoom:function (){
+            this.inRoom = false
         }
     }
 });

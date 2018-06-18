@@ -67,7 +67,7 @@ func (rm *RoomsManager) SendResponse(isSuccess bool, roomName string, w *websock
 	} else {
 		response = CreateRoomResponse{
 			IsCreated:    false,
-			RejectReason: "Internal Error",
+			RejectReason: "Room already created",
 		}
 	}
 
@@ -81,11 +81,15 @@ func (rm *RoomsManager) SendResponse(isSuccess bool, roomName string, w *websock
 	w.WriteJSON(message)
 }
 
-func (rm *RoomsManager) AddRoom(roomName string) {
+func (rm *RoomsManager) AddRoom(roomName string) bool {
+	if _, ok := rm.Rooms[roomName]; ok {
+		return false
+	}
 	rm.Rooms[roomName] = &Room{
 		Name:    roomName,
 		Players: [2]*Player{nil, nil},
 	}
+	return true
 }
 
 func (rm *RoomsManager) EnterRoom(ws *websocket.Conn, roomName string) bool {
