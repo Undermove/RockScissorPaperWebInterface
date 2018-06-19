@@ -105,6 +105,8 @@ func handleMessages() {
 		if authModule.IsLoggedIn(wsMsg.fromWs) {
 			if wsMsg.Message.Type == "CreateRoomRequest" {
 				processCreateRoomRequest(wsMsg)
+			} else if wsMsg.Message.Type == "TurnRequest" {
+				processTurnRequest(wsMsg)
 			}
 		} else if wsMsg.Message.Type == "AuthRequest" {
 			processAuthRequest(wsMsg)
@@ -138,4 +140,8 @@ func processCreateRoomRequest(wsMsg WebSocketMessage) {
 	} else {
 		roomsManager.SendResponse(false, request.RoomName, wsMsg.fromWs)
 	}
+}
+
+func processTurnRequest(wsMsg WebSocketMessage) {
+
 }
