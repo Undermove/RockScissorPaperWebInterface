@@ -9,28 +9,16 @@ var loosersMap = map[string]string{
 type GameModule struct {
 }
 
-func turn(playername string, playerChoise string) {
-	player := players[playername]
-	player.SetPlayerChoise(playerChoise)
-
-	room := rooms[player.CurrentRoomName]
-	for _, currentPlayer := range room.Players {
-		if currentPlayer.PlayerChoise == "" {
-			return
-		}
-	}
-
+func turn(playerOneChoise string, playerTwoChoice string) string {
 	var result string
 
-	if room.Players[0].PlayerChoise == room.Players[1].PlayerChoise {
+	if playerOneChoise == playerTwoChoice {
 		result = "DRAW"
-	} else if loosersMap[room.Players[0].PlayerChoise] == room.Players[1].PlayerChoise {
-		result = room.Players[0].Name + " WINS!!!"
+	} else if loosersMap[playerOneChoise] == playerTwoChoice {
+		result = "PlayerOne WINS!!!"
 	} else {
-		result = room.Players[1].Name + " WINS!!!"
+		result = "PlayerTwo WINS!!!"
 	}
 
-	for _, currentPlayer := range room.Players {
-		authConnections[currentPlayer.Name].Send(result)
-	}
+	return result
 }
