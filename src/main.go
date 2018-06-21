@@ -143,5 +143,14 @@ func processCreateRoomRequest(wsMsg WebSocketMessage) {
 }
 
 func processTurnRequest(wsMsg WebSocketMessage) {
+	var request TurnRequest
 
+	err := json.Unmarshal(wsMsg.Message.Raw, &request)
+	if err != nil {
+		return
+	}
+	room := roomsManager.ConnToRooms[wsMsg.fromWs]
+	if ok, _ := room.TryGetOtherPlayer(authModule.Clients[wsMsg.fromWs]); ok {
+		turn(room.Players[0].Choise, room.Players[1].Choise)
+	}
 }

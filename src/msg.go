@@ -32,3 +32,12 @@ type CreateRoomResponse struct {
 	RoomName     string `json:"roomName"`
 	RejectReason string `json:"rejectReason"`
 }
+
+type TurnRequest struct {
+	Choise string `json:"choise"`
+}
+
+type TurnResponse struct {
+	IsApplied    bool   `json:"isCreated"`
+	RejectReason string `json:"rejectReason"`
+}
