@@ -11,6 +11,7 @@ import (
 )
 
 var roomsManager *RoomsManager
+var gameModule *GameModule
 var authModule *AuthModule                  // handle clients connections
 var broadcast = make(chan WebSocketMessage) // broadcast channel
 
@@ -45,6 +46,7 @@ func provideRoomPage(w http.ResponseWriter, r *http.Request) {
 func main() {
 	authModule = NewModule()
 	roomsManager = NewRoomsManager(authModule)
+	gameModule = NewGameModule()
 
 	// Create a simple file server
 	r := mux.NewRouter()
@@ -158,9 +160,8 @@ func processTurnRequest(wsMsg WebSocketMessage) {
 
 	if ok, _ := room.TryGetOtherPlayer(authModule.Clients[wsMsg.fromWs]); ok {
 		if room.Players[1].Choise != "" {
-			turn(room.Players[0].Choise, room.Players[1].Choise)
-			room.Players[1].Choise = ""
-			room.Players[0].Choise = ""
+			winner := gameModule.Turn(room.Players[0], room.Players[1])
+
 		}
 	}
 }
