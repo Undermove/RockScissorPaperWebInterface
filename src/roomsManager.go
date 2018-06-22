@@ -28,6 +28,16 @@ func (r *Room) TryGetOtherPlayer(currentPlayerName string) (bool, *Player) {
 	return false, nil
 }
 
+func (r *Room) TryGetCurrentPlayer(currentPlayerName string) (bool, *Player) {
+	for i := 0; i < 2; i++ {
+		if r.Players[i] != nil && r.Players[i].Name == currentPlayerName {
+			return true, r.Players[i]
+		}
+	}
+
+	return false, nil
+}
+
 func (r *Room) EnterRoom(player Player) bool {
 	if len(r.Players) <= 2 {
 		for i := 0; i < 2; i++ {

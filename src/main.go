@@ -149,8 +149,18 @@ func processTurnRequest(wsMsg WebSocketMessage) {
 	if err != nil {
 		return
 	}
+
 	room := roomsManager.ConnToRooms[wsMsg.fromWs]
+
+	currentPlayerName := authModule.Clients[wsMsg.fromWs]
+	_, currentPlayer := room.TryGetCurrentPlayer(currentPlayerName)
+	currentPlayer.Choise = request.Choise
+
 	if ok, _ := room.TryGetOtherPlayer(authModule.Clients[wsMsg.fromWs]); ok {
-		turn(room.Players[0].Choise, room.Players[1].Choise)
+		if room.Players[1].Choise != "" {
+			turn(room.Players[0].Choise, room.Players[1].Choise)
+			room.Players[1].Choise = ""
+			room.Players[0].Choise = ""
+		}
 	}
 }
