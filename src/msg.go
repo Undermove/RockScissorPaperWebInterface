@@ -39,5 +39,6 @@ type TurnRequest struct {
 
 type TurnResponse struct {
 	IsApplied    bool   `json:"isCreated"`
+	Result       string `json:"result"`
 	RejectReason string `json:"rejectReason"`
 }

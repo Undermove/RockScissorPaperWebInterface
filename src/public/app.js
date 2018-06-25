@@ -39,7 +39,6 @@ new Vue({
                 {
                     Materialize.toast(msg.Raw.rejectReason, 2000);
                 }
-
             }
         });
     },

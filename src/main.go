@@ -158,10 +158,24 @@ func processTurnRequest(wsMsg WebSocketMessage) {
 	_, currentPlayer := room.TryGetCurrentPlayer(currentPlayerName)
 	currentPlayer.Choise = request.Choise
 
-	if ok, _ := room.TryGetOtherPlayer(authModule.Clients[wsMsg.fromWs]); ok {
+	if ok, otherPlayer := room.TryGetOtherPlayer(authModule.Clients[wsMsg.fromWs]); ok {
 		if room.Players[1].Choise != "" {
 			winner := gameModule.Turn(room.Players[0], room.Players[1])
 
+			response := &TurnResponse{
+				Result:    winner,
+				IsApplied: true,
+			}
+
+			data, _ := json.Marshal(response)
+
+			message := Message{
+				Type: "TurnResponse",
+				Raw:  data,
+			}
+
+			authModule.AuthClients[currentPlayer.Name].WriteJSON(message)
+			authModule.AuthClients[otherPlayer.Name].WriteJSON(message)
 		}
 	}
 }
