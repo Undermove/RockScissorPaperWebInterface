@@ -9,7 +9,8 @@ new Vue({
         joined: false, // True if email and username have been filled in
         inRoom: false,
         rooms: [],
-        newRoom: ''
+        newRoom: '',
+        currentRoom: ''
     },
 
     created: function() {
@@ -95,7 +96,21 @@ new Vue({
         },
 
         enterRoom:function (roomName){
-            this.inRoom = true
+            if (roomName ) {
+                Materialize.toast('You must choose a username', 2000);
+                return
+            }
+
+            var authRequest = {
+                username: this.username
+            }
+            
+            var wrappedAuthRequest = {
+                type: "AuthRequest",
+                raw: authRequest
+            }
+
+            this.ws.send(JSON.stringify(wrappedAuthRequest));
         },
 
         leaveRoom:function (){

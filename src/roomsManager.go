@@ -101,6 +101,31 @@ func (rm *RoomsManager) SendResponse(isSuccess bool, roomName string, w *websock
 	w.WriteJSON(message)
 }
 
+func (rm *RoomsManager) SendRoomEnterResponse(isSuccess bool, roomName string, w *websocket.Conn) {
+	var response EnterRoomResponse
+
+	if isSuccess {
+		response = EnterRoomResponse{
+			RoomName:  roomName,
+			IsEntered: true,
+		}
+	} else {
+		response = EnterRoomResponse{
+			IsEntered: false,
+			RoomName:  roomName,
+		}
+	}
+
+	data, _ := json.Marshal(response)
+
+	message := Message{
+		Type: "CreateRoomResponse",
+		Raw:  data,
+	}
+
+	w.WriteJSON(message)
+}
+
 func (rm *RoomsManager) AddRoom(roomName string) bool {
 	if _, ok := rm.Rooms[roomName]; ok {
 		return false

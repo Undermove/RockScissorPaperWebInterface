@@ -109,6 +109,8 @@ func handleMessages() {
 				processCreateRoomRequest(wsMsg)
 			} else if wsMsg.Message.Type == "TurnRequest" {
 				processTurnRequest(wsMsg)
+			} else if wsMsg.Message.Type == "EnterRoomRequest" {
+				processEnterRoomRequest(wsMsg)
 			}
 		} else if wsMsg.Message.Type == "AuthRequest" {
 			processAuthRequest(wsMsg)
@@ -141,6 +143,21 @@ func processCreateRoomRequest(wsMsg WebSocketMessage) {
 		roomsManager.SendResponse(true, request.RoomName, wsMsg.fromWs)
 	} else {
 		roomsManager.SendResponse(false, request.RoomName, wsMsg.fromWs)
+	}
+}
+
+func processEnterRoomRequest(wsMsg WebSocketMessage) {
+	var request EnterRoomRequest
+
+	err := json.Unmarshal(wsMsg.Message.Raw, &request)
+	if err != nil {
+		return
+	}
+
+	if roomsManager.EnterRoom(wsMsg.fromWs, request.RoomName) {
+		roomsManager.SendRoomEnterResponse(true, request.RoomName, wsMsg.fromWs)
+	} else {
+		roomsManager.SendRoomEnterResponse(false, request.RoomName, wsMsg.fromWs)
 	}
 }
 

@@ -38,7 +38,18 @@ type TurnRequest struct {
 }
 
 type TurnResponse struct {
-	IsApplied    bool   `json:"isCreated"`
+	IsApplied    bool   `json:"isApplied"`
 	Result       string `json:"result"`
 	RejectReason string `json:"rejectReason"`
+}
+
+// Define our message object
+type EnterRoomRequest struct {
+	RoomName string `json:"roomname"`
+}
+
+// Define our message object
+type EnterRoomResponse struct {
+	IsEntered bool   `json:"isEntered"`
+	RoomName  string `json:"roomname"`
 }
