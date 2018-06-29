@@ -41,6 +41,17 @@ new Vue({
                     Materialize.toast(msg.Raw.rejectReason, 2000);
                 }
             }
+            else if(msg.Type == "EnterRoomResponse")
+            {
+                if(msg.Raw.isEntered == true)
+                {
+                    self.inRoom = true;
+                }
+                else
+                {
+                    Materialize.toast(msg.Raw.rejectReason, 2000);
+                }
+            }
         });
     },
     
@@ -96,21 +107,21 @@ new Vue({
         },
 
         enterRoom:function (roomName){
-            if (roomName ) {
-                Materialize.toast('You must choose a username', 2000);
+            if (!roomName) {
+                Materialize.toast('You must choose a room', 2000);
                 return
             }
 
-            var authRequest = {
-                username: this.username
+            var enterRoomRequest = {
+                roomname: roomName
             }
             
-            var wrappedAuthRequest = {
-                type: "AuthRequest",
-                raw: authRequest
+            var wrappedEnterRoomRequest = {
+                type: "EnterRoomRequest",
+                raw: enterRoomRequest
             }
 
-            this.ws.send(JSON.stringify(wrappedAuthRequest));
+            this.ws.send(JSON.stringify(wrappedEnterRoomRequest));
         },
 
         leaveRoom:function (){

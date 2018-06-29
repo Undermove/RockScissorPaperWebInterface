@@ -50,6 +50,7 @@ type EnterRoomRequest struct {
 
 // Define our message object
 type EnterRoomResponse struct {
-	IsEntered bool   `json:"isEntered"`
-	RoomName  string `json:"roomname"`
+	IsEntered    bool   `json:"isEntered"`
+	RoomName     string `json:"roomname"`
+	RejectReason string `json:"rejectReason"`
 }

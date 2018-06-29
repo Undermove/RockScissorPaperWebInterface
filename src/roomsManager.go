@@ -41,7 +41,7 @@ func (r *Room) TryGetCurrentPlayer(currentPlayerName string) (bool, *Player) {
 func (r *Room) EnterRoom(player Player) bool {
 	if len(r.Players) <= 2 {
 		for i := 0; i < 2; i++ {
-			if r.Players[i] != nil {
+			if r.Players[i] == nil {
 				r.Players[i] = &player
 				return true
 			}
@@ -111,15 +111,15 @@ func (rm *RoomsManager) SendRoomEnterResponse(isSuccess bool, roomName string, w
 		}
 	} else {
 		response = EnterRoomResponse{
-			IsEntered: false,
-			RoomName:  roomName,
+			IsEntered:    false,
+			RejectReason: "Room is full",
 		}
 	}
 
 	data, _ := json.Marshal(response)
 
 	message := Message{
-		Type: "CreateRoomResponse",
+		Type: "EnterRoomResponse",
 		Raw:  data,
 	}
 
@@ -138,13 +138,11 @@ func (rm *RoomsManager) AddRoom(roomName string) bool {
 }
 
 func (rm *RoomsManager) EnterRoom(ws *websocket.Conn, roomName string) bool {
-	rm.Rooms[roomName].EnterRoom(Player{
+	return rm.Rooms[roomName].EnterRoom(Player{
 		Name:   rm.AuthModule.Clients[ws],
 		Choise: "",
 		Score:  0,
 	})
-
-	return false
 }
 
 func (rm *RoomsManager) LeaveRoom(ws *websocket.Conn, username string) bool {
