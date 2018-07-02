@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 
 	"github.com/gorilla/websocket"
 )
@@ -54,9 +53,6 @@ func (r *Room) EnterRoom(player Player) bool {
 
 func (r *Room) LeaveRoom(playerName string) bool {
 	for i := 0; i < 2; i++ {
-		if r.Players[i] != nil {
-			log.Printf(r.Players[i].Name)
-		}
 		if r.Players[i] != nil && r.Players[i].Name == playerName {
 			r.Players[i] = nil
 			return true
