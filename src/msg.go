@@ -54,3 +54,15 @@ type EnterRoomResponse struct {
 	RoomName     string `json:"roomname"`
 	RejectReason string `json:"rejectReason"`
 }
+
+// Define our message object
+type LeaveRoomRequest struct {
+	RoomName string `json:"roomname"`
+}
+
+// Define our message object
+type LeaveRoomResponse struct {
+	IsLeft       bool   `json:"isLeft"`
+	RoomName     string `json:"roomname"`
+	RejectReason string `json:"rejectReason"`
+}

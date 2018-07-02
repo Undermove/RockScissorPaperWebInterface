@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/gorilla/websocket"
 )
@@ -51,8 +52,11 @@ func (r *Room) EnterRoom(player Player) bool {
 	return false
 }
 
-func (r Room) LeaveRoom(playerName string) bool {
+func (r *Room) LeaveRoom(playerName string) bool {
 	for i := 0; i < 2; i++ {
+		if r.Players[i] != nil {
+			log.Printf(r.Players[i].Name)
+		}
 		if r.Players[i] != nil && r.Players[i].Name == playerName {
 			r.Players[i] = nil
 			return true
@@ -138,16 +142,23 @@ func (rm *RoomsManager) AddRoom(roomName string) bool {
 }
 
 func (rm *RoomsManager) EnterRoom(ws *websocket.Conn, roomName string) bool {
-	return rm.Rooms[roomName].EnterRoom(Player{
+	isEneterd := rm.Rooms[roomName].EnterRoom(Player{
 		Name:   rm.AuthModule.Clients[ws],
 		Choise: "",
 		Score:  0,
 	})
+
+	if isEneterd {
+		rm.ConnToRooms[ws] = rm.Rooms[roomName]
+	}
+
+	return isEneterd
 }
 
 func (rm *RoomsManager) LeaveRoom(ws *websocket.Conn, username string) bool {
 	if _, ok := rm.ConnToRooms[ws]; ok {
 		rm.ConnToRooms[ws].LeaveRoom(username)
+		delete(rm.ConnToRooms, ws)
 	}
 
 	return true
@@ -159,4 +170,29 @@ func (rm *RoomsManager) IsInRoom(ws *websocket.Conn) bool {
 	}
 
 	return false
+}
+
+func (rm *RoomsManager) SendLeaveRoomResponse(isSuccess bool, roomName string, w *websocket.Conn) {
+	var response LeaveRoomResponse
+
+	if isSuccess {
+		response = LeaveRoomResponse{
+			RoomName: roomName,
+			IsLeft:   true,
+		}
+	} else {
+		response = LeaveRoomResponse{
+			IsLeft:       false,
+			RejectReason: "You are not in room",
+		}
+	}
+
+	data, _ := json.Marshal(response)
+
+	message := Message{
+		Type: "LeaveRoomResponse",
+		Raw:  data,
+	}
+
+	w.WriteJSON(message)
 }

@@ -46,6 +46,19 @@ new Vue({
                 if(msg.Raw.isEntered == true)
                 {
                     self.inRoom = true;
+                    self.currentRoom = msg.Raw.roomname
+                }
+                else
+                {
+                    Materialize.toast(msg.Raw.rejectReason, 2000);
+                }
+            }
+            else if(msg.Type == "LeaveRoomResponse")
+            {
+                if(msg.Raw.isLeft == true)
+                {
+                    self.inRoom = false;
+                    self.currentRoom = ""
                 }
                 else
                 {
@@ -125,7 +138,21 @@ new Vue({
         },
 
         leaveRoom:function (){
-            this.inRoom = false
+            if (!this.currentRoom) {
+                Materialize.toast('You are not in room', 2000);
+                return
+            }
+
+            var leaveRoomRequest = {
+                roomname: this.currentRoom
+            }
+            
+            var wrappedLeaveRoomRequest = {
+                type: "LeaveRoomRequest",
+                raw: leaveRoomRequest
+            }
+
+            this.ws.send(JSON.stringify(wrappedLeaveRoomRequest));
         }
     }
 });
