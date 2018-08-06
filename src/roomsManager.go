@@ -76,6 +76,18 @@ func NewRoomsManager(auth *AuthModule) *RoomsManager {
 	}
 }
 
+func (rm *RoomsManager) GetRoomNames() []string {
+	// Can this be done better?
+	roomsList := make([]string, len(rm.Rooms))
+	idx := 0
+	for _, value := range rm.Rooms {
+		roomsList[idx] = value.Name
+		idx++
+	}
+
+	return roomsList
+}
+
 func (rm *RoomsManager) SendResponse(isSuccess bool, roomName string, w *websocket.Conn) {
 	var response CreateRoomResponse
 

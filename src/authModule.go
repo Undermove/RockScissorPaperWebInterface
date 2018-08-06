@@ -55,9 +55,10 @@ func (a *AuthModule) Authenticate(w *websocket.Conn, m AuthRequest) bool {
 	return true
 }
 
-func (a *AuthModule) SendSuccessResponse(w *websocket.Conn) {
+func (a *AuthModule) SendSuccessResponse(w *websocket.Conn, roomsList []string) {
 	response := AuthResponse{
 		IsRegistred: true,
+		RoomsList:   roomsList,
 	}
 
 	data, _ := json.Marshal(response)

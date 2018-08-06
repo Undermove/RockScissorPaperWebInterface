@@ -25,6 +25,7 @@ new Vue({
                     self.username = $('<p>').html(this.username).text();
                     self.joined = true;
                     self.newRoom = $('<p>').html(this.newRoom).text()
+                    self.rooms = msg.Raw.roomsList
                 }
                 else
                 {
@@ -70,6 +71,10 @@ new Vue({
             {
                 if(msg.Raw.isApplied == true)
                 {
+                    if(msg.Raw.result != "")
+                    {
+                        Materialize.toast(msg.Raw.result, 2000);
+                    }
                 }
                 else
                 {
@@ -172,16 +177,16 @@ new Vue({
                 return
             }
 
-            var leaveRoomRequest = {
+            var turnRequest = {
                 choise: playerChiose
             }
             
-            var wrappedLeaveRoomRequest = {
+            var wrappedturnRequest = {
                 type: "TurnRequest",
-                raw: leaveRoomRequest
+                raw: turnRequest
             }
 
-            this.ws.send(JSON.stringify(wrappedLeaveRoomRequest));
+            this.ws.send(JSON.stringify(wrappedturnRequest));
         }
     }
 });

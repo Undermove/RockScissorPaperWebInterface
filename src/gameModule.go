@@ -1,10 +1,18 @@
 package main
 
+import (
+	"encoding/json"
+
+	"github.com/gorilla/websocket"
+)
+
 type GameModule struct {
-	loosersMap map[string]string
+	loosersMap   map[string]string
+	authModule   *AuthModule
+	roomsManager *RoomsManager
 }
 
-func NewGameModule() *GameModule {
+func NewGameModule(authModule *AuthModule, roomsManager *RoomsManager) *GameModule {
 
 	var loosersMap = map[string]string{
 		"Rock":     "Scissors",
@@ -13,11 +21,13 @@ func NewGameModule() *GameModule {
 	}
 
 	return &GameModule{
-		loosersMap: loosersMap,
+		loosersMap:   loosersMap,
+		authModule:   authModule,
+		roomsManager: roomsManager,
 	}
 }
 
-func (g *GameModule) Turn(playerOne *Player, playerTwo *Player) string {
+func (g *GameModule) turn(playerOne *Player, playerTwo *Player) string {
 	var result string
 
 	if playerOne.Choise == playerTwo.Choise {
@@ -34,4 +44,58 @@ func (g *GameModule) Turn(playerOne *Player, playerTwo *Player) string {
 	playerTwo.Choise = ""
 
 	return result
+}
+
+func (g *GameModule) Turn(w *websocket.Conn, request TurnRequest) *TurnResponse {
+	room := g.roomsManager.ConnToRooms[w]
+
+	currentPlayerName := g.authModule.Clients[w]
+	ok, currentPlayer := room.TryGetCurrentPlayer(currentPlayerName)
+	if !ok {
+		return &TurnResponse{
+			RejectReason: "You must be in room first",
+			IsApplied:    false,
+		}
+	}
+	currentPlayer.Choise = request.Choise
+
+	if ok, otherPlayer := room.TryGetOtherPlayer(g.authModule.Clients[w]); ok {
+		if otherPlayer.Choise != "" {
+			winner := gameModule.turn(currentPlayer, otherPlayer)
+			return &TurnResponse{
+				Result:            winner,
+				OtherPlayerChoise: otherPlayer.Choise,
+				IsApplied:         true,
+			}
+		}
+	}
+
+	return &TurnResponse{
+		IsApplied: true,
+	}
+}
+
+func (g *GameModule) SendTurnResponse(resp TurnResponse, w *websocket.Conn) {
+	data, _ := json.Marshal(resp)
+
+	if resp.Result != "" {
+		message := Message{
+			Type: "TurnResponse",
+			Raw:  data,
+		}
+
+		room := g.roomsManager.ConnToRooms[w]
+		_, otherPlayer := room.TryGetOtherPlayer(g.authModule.Clients[w])
+
+		// send message to all players
+		g.authModule.AuthClients[otherPlayer.Name].WriteJSON(message)
+		w.WriteJSON(message)
+		return
+	}
+
+	message := Message{
+		Type: "TurnResponse",
+		Raw:  data,
+	}
+	w.WriteJSON(message)
 }

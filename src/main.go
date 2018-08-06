@@ -46,7 +46,7 @@ func provideRoomPage(w http.ResponseWriter, r *http.Request) {
 func main() {
 	authModule = NewModule()
 	roomsManager = NewRoomsManager(authModule)
-	gameModule = NewGameModule()
+	gameModule = NewGameModule(authModule, roomsManager)
 
 	// Create a simple file server
 	r := mux.NewRouter()
@@ -127,7 +127,7 @@ func processAuthRequest(wsMsg WebSocketMessage) {
 		return
 	}
 	if authModule.Authenticate(wsMsg.fromWs, request) {
-		authModule.SendSuccessResponse(wsMsg.fromWs)
+		authModule.SendSuccessResponse(wsMsg.fromWs, roomsManager.GetRoomNames())
 	} else {
 		authModule.SendRejectResponse(wsMsg.fromWs)
 	}
@@ -185,45 +185,6 @@ func processTurnRequest(wsMsg WebSocketMessage) {
 	if err != nil {
 		return
 	}
-
-	room := roomsManager.ConnToRooms[wsMsg.fromWs]
-
-	currentPlayerName := authModule.Clients[wsMsg.fromWs]
-	_, currentPlayer := room.TryGetCurrentPlayer(currentPlayerName)
-	currentPlayer.Choise = request.Choise
-
-	if ok, otherPlayer := room.TryGetOtherPlayer(authModule.Clients[wsMsg.fromWs]); !ok {
-		response := &TurnResponse{
-			IsApplied:    false,
-			RejectReason: "No other player in room",
-		}
-
-		data, _ := json.Marshal(response)
-
-		message := Message{
-			Type: "TurnResponse",
-			Raw:  data,
-		}
-		authModule.AuthClients[currentPlayer.Name].WriteJSON(message)
-		return
-	}
-
-	if room.Players[1].Choise != "" {
-		winner := gameModule.Turn(room.Players[0], room.Players[1])
-
-		response := &TurnResponse{
-			Result:    winner,
-			IsApplied: true,
-		}
-
-		data, _ := json.Marshal(response)
-
-		message := Message{
-			Type: "TurnResponse",
-			Raw:  data,
-		}
-
-		authModule.AuthClients[currentPlayer.Name].WriteJSON(message)
-		authModule.AuthClients[otherPlayer.Name].WriteJSON(message)
-	}
+	turnResp := gameModule.Turn(wsMsg.fromWs, request)
+	gameModule.SendTurnResponse(*turnResp, wsMsg.fromWs)
 }

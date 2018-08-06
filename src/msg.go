@@ -17,8 +17,9 @@ type AuthRequest struct {
 
 // Define our message object
 type AuthResponse struct {
-	IsRegistred  bool   `json:"isRegistred"`
-	RejectReason string `json:"rejectReason"`
+	IsRegistred  bool     `json:"isRegistred"`
+	RejectReason string   `json:"rejectReason"`
+	RoomsList    []string `json:"roomsList"`
 }
 
 // Define our message object
@@ -38,9 +39,10 @@ type TurnRequest struct {
 }
 
 type TurnResponse struct {
-	IsApplied    bool   `json:"isApplied"`
-	Result       string `json:"result"`
-	RejectReason string `json:"rejectReason"`
+	IsApplied         bool   `json:"isApplied"`
+	Result            string `json:"result"`
+	OtherPlayerChoise string `json:"otherPlayerChoise"`
+	RejectReason      string `json:"rejectReason"`
 }
 
 // Define our message object
