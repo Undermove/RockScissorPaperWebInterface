@@ -192,24 +192,38 @@ func processTurnRequest(wsMsg WebSocketMessage) {
 	_, currentPlayer := room.TryGetCurrentPlayer(currentPlayerName)
 	currentPlayer.Choise = request.Choise
 
-	if ok, otherPlayer := room.TryGetOtherPlayer(authModule.Clients[wsMsg.fromWs]); ok {
-		if room.Players[1].Choise != "" {
-			winner := gameModule.Turn(room.Players[0], room.Players[1])
-
-			response := &TurnResponse{
-				Result:    winner,
-				IsApplied: true,
-			}
-
-			data, _ := json.Marshal(response)
-
-			message := Message{
-				Type: "TurnResponse",
-				Raw:  data,
-			}
-
-			authModule.AuthClients[currentPlayer.Name].WriteJSON(message)
-			authModule.AuthClients[otherPlayer.Name].WriteJSON(message)
+	if ok, otherPlayer := room.TryGetOtherPlayer(authModule.Clients[wsMsg.fromWs]); !ok {
+		response := &TurnResponse{
+			IsApplied:    false,
+			RejectReason: "No other player in room",
 		}
+
+		data, _ := json.Marshal(response)
+
+		message := Message{
+			Type: "TurnResponse",
+			Raw:  data,
+		}
+		authModule.AuthClients[currentPlayer.Name].WriteJSON(message)
+		return
+	}
+
+	if room.Players[1].Choise != "" {
+		winner := gameModule.Turn(room.Players[0], room.Players[1])
+
+		response := &TurnResponse{
+			Result:    winner,
+			IsApplied: true,
+		}
+
+		data, _ := json.Marshal(response)
+
+		message := Message{
+			Type: "TurnResponse",
+			Raw:  data,
+		}
+
+		authModule.AuthClients[currentPlayer.Name].WriteJSON(message)
+		authModule.AuthClients[otherPlayer.Name].WriteJSON(message)
 	}
 }

@@ -10,7 +10,8 @@ new Vue({
         inRoom: false,
         rooms: [],
         newRoom: '',
-        currentRoom: ''
+        currentRoom: '',
+        otherPlayerChoise: ''
     },
 
     created: function() {
@@ -59,6 +60,16 @@ new Vue({
                 {
                     self.inRoom = false;
                     self.currentRoom = ""
+                }
+                else
+                {
+                    Materialize.toast(msg.Raw.rejectReason, 2000);
+                }
+            }
+            else if(msg.Type == "TurnResponse")
+            {
+                if(msg.Raw.isApplied == true)
+                {
                 }
                 else
                 {
@@ -149,6 +160,24 @@ new Vue({
             
             var wrappedLeaveRoomRequest = {
                 type: "LeaveRoomRequest",
+                raw: leaveRoomRequest
+            }
+
+            this.ws.send(JSON.stringify(wrappedLeaveRoomRequest));
+        },
+
+        turn:function (playerChiose){
+            if (!this.currentRoom) {
+                Materialize.toast('You are not in room', 2000);
+                return
+            }
+
+            var leaveRoomRequest = {
+                choise: playerChiose
+            }
+            
+            var wrappedLeaveRoomRequest = {
+                type: "TurnRequest",
                 raw: leaveRoomRequest
             }
 
