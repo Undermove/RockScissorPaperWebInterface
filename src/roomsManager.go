@@ -120,6 +120,7 @@ func (rm *RoomsManager) SendRoomEnterResponse(isSuccess bool, roomName string, w
 		response = EnterRoomResponse{
 			RoomName:  roomName,
 			IsEntered: true,
+			OtherPlayerName: 
 		}
 	} else {
 		response = EnterRoomResponse{
