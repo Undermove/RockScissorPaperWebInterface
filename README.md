@@ -7,3 +7,8 @@
 Simple realisation od rock-scissors-paper game with Golang and Vue.js. 
 The project was created with the objectives of training.
 There is a lot of bullshit code. Every recomendations about refactoring are welcome!)
+
+Launch instructions:
+1. Bulld and run
+2. In browser http://localhost:8000
+3. Play)
