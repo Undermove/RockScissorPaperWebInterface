@@ -10,16 +10,9 @@ main {
     justify-content: center;
 }
 
-#chat-messages {
-    min-height: 10vh;
-    height: 50vh;
-    width: 100%;
-    overflow-y: scroll;
-}
-
 #rooms-list {
     min-height: 10vh;
-    height: 50vh;
+    height: 20vh;
     width: 100%;
     overflow-y: scroll;
 }

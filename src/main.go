@@ -158,6 +158,7 @@ func processEnterRoomRequest(wsMsg WebSocketMessage) {
 
 	if roomsManager.EnterRoom(wsMsg.fromWs, request.RoomName) {
 		roomsManager.SendRoomEnterResponse(true, request.RoomName, wsMsg.fromWs)
+		roomsManager.SendPlayerEnteredNotification(request.RoomName, wsMsg.fromWs)
 	} else {
 		roomsManager.SendRoomEnterResponse(false, request.RoomName, wsMsg.fromWs)
 	}
@@ -173,6 +174,7 @@ func processLeaveRoomRequest(wsMsg WebSocketMessage) {
 
 	if roomsManager.LeaveRoom(wsMsg.fromWs, authModule.Clients[wsMsg.fromWs]) {
 		roomsManager.SendLeaveRoomResponse(true, request.RoomName, wsMsg.fromWs)
+		roomsManager.SendPlayerLeftNotification(request.RoomName, wsMsg.fromWs)
 	} else {
 		roomsManager.SendLeaveRoomResponse(false, request.RoomName, wsMsg.fromWs)
 	}

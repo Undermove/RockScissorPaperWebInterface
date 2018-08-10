@@ -1,92 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Simple Chat</title>
+    <title>Rock Scissors Paper</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css" />
     <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-<header>
-    <nav>
-        <div class="nav-wrapper blue-grey darken-3">
-            <a class="brand-logo center" >Rock Scissors Paper</a>
-        </div>
-    </nav>
-</header>
 
-<main id="app">
-    <div id = "menu" v-if="!inRoom">
-        <!--<div class="row">
+<body>
+    <header>
+        <nav>
+            <div class="nav-wrapper blue-grey darken-3">
+                <a class="brand-logo center">Rock Scissors Paper</a>
+            </div>
+        </nav>
+    </header>
+
+    <main id="app">
+        <div id="menu" v-if="!inRoom">
+            <div class="row">
                 <div class="col s4 center"></div>
-                <div class="col s4 center">
-                    <a class="collection-header"><h4>Rooms List</h4></a>
-                    <ul id = "rooms-list" class="collection">
-                        <li v-for="(room, index) in rooms" :key="index" @click="enterRoom(room)">{{room}}</li>
+                <div class="col s4">
+                    <a class="collection-header center">
+                        <h4>Rooms List</h4>
+                    </a>
+                    <ul id="rooms-list" class="collection left">
+                        <li class="collection-item" v-for="(room, index) in rooms" :key="index" @click="enterRoom(room)" title="Click to enter">
+                            <div>Room: {{room}}
+                                <br> players: 2/2
+                                <a href="#!" class="secondary-content">
+                                    <i class="material-icons">meeting_room</i>
+                                </a>
+                            </div>
+                        </li>
                     </ul>
                 </div>
-                <div class="col s4 center" v-if="joined">
-                    <a class="collection-header"><h4>Create new room</h4></a>
-                    <div class="input-field col s12">
-                        <input v-model="newRoom" id="first_name" type="text" class="validate">
-                        <label for="first_name">Room Name:</label>
-                        <button class="waves-effect waves-light btn" v-on:click="createRoom">
-                                <i class="material-icons right">done</i>
-                                Create
-                        </button>
-                    </div>
-                </div>
-            </div>-->
-            <div class="row" v-if="!joined">
-                <div class="col s4 center"></div>
-                <div class="input-field col s4 row">
+            </div>
+            <div class="row">
+                <div class="input-field col s5 row center"></div>
+                <div class="input-field col s2 row center" v-if="!joined">
                     <input type="text" v-model.trim="username" placeholder="Username">
                 </div>
-                <div class="input-field col s4 row">
+                <div class="input-field col s12 row center" v-if="!joined">
                     <button class="waves-effect waves-light btn" @click="join()">
                         <i class="material-icons right">done</i>
                         Join
                     </button>
+                    <p>Just enter username into the field above then click join</p>
+                </div>
+                <div class="col s2 row center" v-if="joined">
+                    <a class="collection-header">
+                        <h4>Create new room</h4>
+                    </a>
+                    <div class="input-field col s12">
+                        <input v-model="newRoom" id="first_name" type="text" class="validate" placeholder="Room name">
+                        <button class="waves-effect waves-light btn" v-on:click="createRoom">
+                            <i class="material-icons right">done</i>
+                            Create
+                        </button>
+                        <p>Create new or connect to created room in list by clicking on it</p>
+                    </div>
+                </div>
+
+                <div class="input-field col s12 row center">
+                    <br><br><br>
+                    <p>It's simple game without any modifications. My first project with Golang and Vue.js</p>
+                    <p>Full source code on GitHub</p>
+                    <a href="https://github.com/Undermove/RockScissorPaperWebInterface">Source code</a>
                 </div>
             </div>
-            <div class="valign-wrapper">
+        </div>
 
+        <div id="appGame" v-if="inRoom">
+            <div class="col s4">
+                <a class="btn-floating btn-large waves-effect waves-light red right" @click="leaveRoom()">Exit
+                    <i class="fa fa-close"></i>
+                </a>
             </div>
-
-    </div>
-
-    <div id="appGame" v-if="inRoom">
-            <div class="row">
+            <div class="row" v-if="isRoomFull">
                 <div class="col s4"></div>
                 <div class="col s2">
-                    <a class="collection-header"><h4>Your Score: 0</h4></a>
-                    <a class="collection-header"><h4>Your Choise</h4></a>
-                    <a class="btn-floating btn-large waves-effect waves-light red"><i class="fa fa-hand-scissors-o" @click="turn('Scissors')"></i></a>
-                    <a class="btn-floating btn-large waves-effect waves-light red"><i class="fa fa-hand-rock-o" @click="turn('Rock')"></i></a>
-                    <a class="btn-floating btn-large waves-effect waves-light red"><i class="fa fa-hand-paper-o" @click="turn('Paper')"></i></a>
+                    <a class="collection-header">
+                        <h4>Your Score: 0</h4>
+                    </a>
+                    <a class="collection-header">
+                        <h4>Your Choise</h4>
+                    </a>
+                    <a class="btn-floating btn-large waves-effect waves-light red">
+                        <i class="fa fa-hand-scissors-o" @click="turn('Scissors')"></i>
+                    </a>
+                    <a class="btn-floating btn-large waves-effect waves-light red">
+                        <i class="fa fa-hand-rock-o" @click="turn('Rock')"></i>
+                    </a>
+                    <a class="btn-floating btn-large waves-effect waves-light red">
+                        <i class="fa fa-hand-paper-o" @click="turn('Paper')"></i>
+                    </a>
                 </div>
+                <div class="col s2"></div>
                 <div class="col s2">
-                    <a class="collection-header"><h4>Enemy Score: 0</h4></a>
-                    <a class="collection-header"><h4>Enemy Choise</h4></a>
-                    <a class="btn-floating btn-large waves-effect waves-light red" ><i class="fa fa-question"></i></a>
+                    <a class="collection-header">
+                        <h4>{{otherPlayerName}}: 0</h4>
+                    </a>
+                    <a class="collection-header">
+                        <h4>Enemy Choise</h4>
+                    </a>
+                    <a class="btn-floating btn-large waves-effect waves-light red">
+                        <i class="fa fa-question"></i>
+                    </a>
                 </div>
-                <div class="col s4">
-                    <a class="btn-floating btn-large waves-effect waves-light red right" @click="leaveRoom()">Exit<i class="fa fa-close"></i></a>
+            </div>
+            <div class="row" v-if="!isRoomFull">
+                <br><br><br><br><br><br><br><br><br><br><br><br><br>
+                <a class="header center">
+                    <h4>Waiting for opponent</h4>
+                </a>
+                <div class="progress">
+                    <div class="indeterminate"></div>
                 </div>
+            </div>
         </div>
-</main>
+    </main>
 
-<footer class="page-footer blue-grey darken-3">
-</footer>
-<script src="https://unpkg.com/vue@2.1.3/dist/vue.min.js"></script>
-<script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
-<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
-<script src="/app.js"></script>
+    <footer class="page-footer blue-grey darken-3">
+    </footer>
+    <script src="https://unpkg.com/vue@2.1.3/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/emojione/2.2.6/lib/js/emojione.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/md5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+    <script src="/app.js"></script>
 </body>
+
 </html>

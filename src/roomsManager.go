@@ -120,7 +120,6 @@ func (rm *RoomsManager) SendRoomEnterResponse(isSuccess bool, roomName string, w
 		response = EnterRoomResponse{
 			RoomName:  roomName,
 			IsEntered: true,
-			OtherPlayerName: 
 		}
 	} else {
 		response = EnterRoomResponse{
@@ -137,6 +136,52 @@ func (rm *RoomsManager) SendRoomEnterResponse(isSuccess bool, roomName string, w
 	}
 
 	w.WriteJSON(message)
+}
+
+func (rm *RoomsManager) SendPlayerEnteredNotification(roomName string, w *websocket.Conn) {
+	var currentPlayer = rm.AuthModule.Clients[w]
+	if ok, otherPlayer := rm.ConnToRooms[w].TryGetOtherPlayer(currentPlayer); ok {
+
+		var notificationToCurrent = PlayerEneteredNotification{
+			OtherPlayerName: otherPlayer.Name,
+		}
+
+		var notificationToOther = PlayerEneteredNotification{
+			OtherPlayerName: currentPlayer,
+		}
+
+		data, _ := json.Marshal(notificationToCurrent)
+		dataToOther, _ := json.Marshal(notificationToOther)
+
+		messageToOther := Message{
+			Type: "PlayerEneteredNotification",
+			Raw:  dataToOther,
+		}
+
+		messageToCurrent := Message{
+			Type: "PlayerEneteredNotification",
+			Raw:  data,
+		}
+
+		w.WriteJSON(messageToCurrent)
+		rm.AuthModule.AuthClients[otherPlayer.Name].WriteJSON(messageToOther)
+	}
+}
+
+func (rm *RoomsManager) SendPlayerLeftNotification(roomName string, w *websocket.Conn) {
+	var currentPlayer = rm.AuthModule.Clients[w]
+	if ok, otherPlayer := rm.Rooms[roomName].TryGetOtherPlayer(currentPlayer); ok {
+		var notificationToOther = PlayerLeftNotification{}
+
+		data, _ := json.Marshal(notificationToOther)
+
+		messageToOther := Message{
+			Type: "PlayerLeftNotification",
+			Raw:  data,
+		}
+
+		rm.AuthModule.AuthClients[otherPlayer.Name].WriteJSON(messageToOther)
+	}
 }
 
 func (rm *RoomsManager) AddRoom(roomName string) bool {

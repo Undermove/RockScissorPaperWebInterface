@@ -50,12 +50,18 @@ type EnterRoomRequest struct {
 	RoomName string `json:"roomname"`
 }
 
+type PlayerEneteredNotification struct {
+	OtherPlayerName string `json:"otherPlayerName"`
+}
+
+type PlayerLeftNotification struct {
+}
+
 // Define our message object
 type EnterRoomResponse struct {
-	IsEntered       bool   `json:"isEntered"`
-	RoomName        string `json:"roomname"`
-	RejectReason    string `json:"rejectReason"`
-	OtherPlayerName string `json:"otherPlayerName"`
+	IsEntered    bool   `json:"isEntered"`
+	RoomName     string `json:"roomname"`
+	RejectReason string `json:"rejectReason"`
 }
 
 // Define our message object

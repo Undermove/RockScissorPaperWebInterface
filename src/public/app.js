@@ -11,7 +11,9 @@ new Vue({
         rooms: [],
         newRoom: '',
         currentRoom: '',
-        otherPlayerChoise: ''
+        otherPlayerChoise: '',
+        otherPlayerName: '',
+        isRoomFull: false
     },
 
     created: function() {
@@ -80,6 +82,16 @@ new Vue({
                 {
                     Materialize.toast(msg.Raw.rejectReason, 2000);
                 }
+            }
+            else if(msg.Type == "PlayerEneteredNotification")
+            {
+                self.isRoomFull = true
+                self.otherPlayerName = msg.Raw.otherPlayerName
+            }
+            else if(msg.Type == "PlayerLeftNotification")
+            {
+                self.isRoomFull = false
+                self.otherPlayerName = ""
             }
         });
     },
