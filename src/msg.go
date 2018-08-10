@@ -39,10 +39,12 @@ type TurnRequest struct {
 }
 
 type TurnResponse struct {
-	IsApplied         bool   `json:"isApplied"`
-	Result            string `json:"result"`
-	OtherPlayerChoise string `json:"otherPlayerChoise"`
-	RejectReason      string `json:"rejectReason"`
+	IsApplied          bool   `json:"isApplied"`
+	Result             string `json:"result"`
+	OtherPlayerChoise  string `json:"otherPlayerChoise"`
+	OtherPlayerScore   int    `json:"otherPlayerScore"`
+	CurrentPlayerScore int    `json:"currentPlayerScore"`
+	RejectReason       string `json:"rejectReason"`
 }
 
 // Define our message object

@@ -13,6 +13,8 @@ new Vue({
         currentRoom: '',
         otherPlayerChoise: '',
         otherPlayerName: '',
+        playerScore: 0,
+        otherPlayerScore: 0,
         isRoomFull: false
     },
 
@@ -76,6 +78,8 @@ new Vue({
                     if(msg.Raw.result != "")
                     {
                         Materialize.toast(msg.Raw.result, 2000);
+                        self.otherPlayerScore = msg.Raw.otherPlayerScore;
+                        self.playerScore = msg.Raw.currentPlayerScore;
                     }
                 }
                 else
