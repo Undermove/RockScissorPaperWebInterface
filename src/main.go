@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 
@@ -28,22 +29,18 @@ type WebSocketMessage struct {
 }
 
 func provideScriptFile(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "public/app.js")
+	http.ServeFile(w, r, dir+"/public/app.js")
 }
 
 func provideStyleFile(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "public/style.css")
+	http.ServeFile(w, r, dir+"/public/style.css")
 }
 
-func provideMainPage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "public/index.html")
-}
-
-func provideRoomPage(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "room/index.html")
-}
+var dir string
 
 func main() {
+	dir, _ = os.Getwd()
+	log.Println(dir)
 	authModule = NewModule()
 	roomsManager = NewRoomsManager(authModule)
 	gameModule = NewGameModule(authModule, roomsManager)
@@ -51,10 +48,8 @@ func main() {
 	// Create a simple file server
 	r := mux.NewRouter()
 
-	fs := http.FileServer(http.Dir("public"))
-	fs2 := http.FileServer(http.Dir("room"))
+	fs := http.FileServer(http.Dir(dir + "/public"))
 	r.Handle("/", http.StripPrefix("/", fs))
-	r.Handle("/room", http.StripPrefix("/room", fs2))
 	r.HandleFunc("/app.js", provideScriptFile).Methods("GET")
 	r.HandleFunc("/style.css", provideStyleFile).Methods("GET")
 
