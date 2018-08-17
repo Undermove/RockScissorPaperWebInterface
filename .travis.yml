@@ -2,3 +2,16 @@ language: go
 
 go:
   - "1.x"
+
+script:
+- scripts/build.sh
+
+notifications:
+  email: false
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: scripts/deploy.sh
+  on:
+    branch: master
