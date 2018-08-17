@@ -4,7 +4,7 @@ go:
   - "1.x"
 
 script:
-- scripts/build.sh
+- $HOME/gopath/src/github.com/Undermove/RockScissorPaperWebInterface/scripts/build.sh
 
 notifications:
   email: false
