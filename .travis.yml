@@ -3,9 +3,6 @@ language: go
 go:
   - "1.x"
 
-script:
-- $HOME/gopath/src/github.com/Undermove/RockScissorPaperWebInterface/scripts/build.sh
-
 notifications:
   email: false
 
