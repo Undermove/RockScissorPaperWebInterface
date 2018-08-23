@@ -15,7 +15,9 @@ new Vue({
         otherPlayerName: '',
         playerScore: 0,
         otherPlayerScore: 0,
-        isRoomFull: false
+        isRoomFull: false,
+        isTurned: false,
+        isOpponentTurned: false
     },
 
     created: function() {
@@ -29,7 +31,17 @@ new Vue({
                     self.username = $('<p>').html(this.username).text();
                     self.joined = true;
                     self.newRoom = $('<p>').html(this.newRoom).text()
-                    self.rooms = msg.Raw.roomsList
+                    var roomsArray = Object.keys(msg.Raw.roomsList).map(i => msg.Raw.roomsList[i])
+                    Object.keys(msg.Raw.roomsList).forEach(key => {
+                        var room = new Object;
+                        room['name'] = key;
+                        room['players'] = msg.Raw.roomsList[key];
+                        self.rooms.push(room);
+                    });
+                    // var myData = Object.keys(msg.Raw.roomsList).map(key => {
+                    //     return msg.Raw.roomsList[key];
+                    // })
+                    // self.rooms.concat(roomsArray)
                 }
                 else
                 {
@@ -40,7 +52,12 @@ new Vue({
             {
                 if(msg.Raw.isCreated == true)
                 {
-                    self.rooms.push(msg.Raw.roomName);
+                    var keys = Object.keys( msg.Raw.roomName );
+                    var key = keys[0]
+                    var room = new Object;
+                    room['name'] = key;
+                    room['players'] = msg.Raw.roomName[key];
+                    self.rooms.push(room);
                 }
                 else
                 {
@@ -52,7 +69,7 @@ new Vue({
                 if(msg.Raw.isEntered == true)
                 {
                     self.inRoom = true;
-                    self.currentRoom = msg.Raw.roomname
+                    self.currentRoom = msg.Raw.roomname;
                 }
                 else
                 {
@@ -64,7 +81,7 @@ new Vue({
                 if(msg.Raw.isLeft == true)
                 {
                     self.inRoom = false;
-                    self.currentRoom = ""
+                    self.currentRoom = "";
                 }
                 else
                 {
@@ -80,6 +97,14 @@ new Vue({
                         Materialize.toast(msg.Raw.result, 2000);
                         self.otherPlayerScore = msg.Raw.otherPlayerScore;
                         self.playerScore = msg.Raw.currentPlayerScore;
+                        self.isTurned = false;
+                        self.isOpponentTurned = false;
+                    } else{
+                        if(msg.Raw.otherPlayerChoise == "OtherPlayerTurned"){
+                            self.isOpponentTurned = true;
+                        }else{
+                            self.isTurned = true;
+                        }
                     }
                 }
                 else
@@ -89,6 +114,7 @@ new Vue({
             }
             else if(msg.Type == "PlayerEneteredNotification")
             {
+                self.isTurned = false;
                 self.isRoomFull = true
                 self.otherPlayerName = msg.Raw.otherPlayerName
             }

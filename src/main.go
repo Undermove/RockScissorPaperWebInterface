@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"log"
+	"flag"
 	"net/http"
 	"os"
 
@@ -15,6 +15,7 @@ var roomsManager *RoomsManager
 var gameModule *GameModule
 var authModule *AuthModule                  // handle clients connections
 var broadcast = make(chan WebSocketMessage) // broadcast channel
+var logpath = flag.String("logpath", os.Getenv("RPS_LOG_PATH"), "Log Path")
 
 // Configure the upgrader
 var upgrader = websocket.Upgrader{
@@ -29,18 +30,19 @@ type WebSocketMessage struct {
 }
 
 func provideScriptFile(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, dir+"/public/app.js")
+	http.ServeFile(w, r, os.Getenv("RPS_PATH")+"/public/app.js")
 }
 
 func provideStyleFile(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, dir+"/public/style.css")
+	http.ServeFile(w, r, os.Getenv("RPS_PATH")+"/public/style.css")
 }
 
 var dir string
 
 func main() {
-	dir, _ = os.Getwd()
-	log.Println(dir)
+	NewLog(*logpath)
+	dir = os.Getenv("RPS_PATH")
+	Log.Println(os.Getenv("RPS_PATH"))
 	authModule = NewModule()
 	roomsManager = NewRoomsManager(authModule)
 	gameModule = NewGameModule(authModule, roomsManager)
@@ -48,7 +50,7 @@ func main() {
 	// Create a simple file server
 	r := mux.NewRouter()
 
-	fs := http.FileServer(http.Dir(dir + "/public"))
+	fs := http.FileServer(http.Dir(os.Getenv("RPS_PATH") + "/public"))
 	r.Handle("/", http.StripPrefix("/", fs))
 	r.HandleFunc("/app.js", provideScriptFile).Methods("GET")
 	r.HandleFunc("/style.css", provideStyleFile).Methods("GET")
@@ -60,10 +62,10 @@ func main() {
 	go handleMessages()
 
 	// Start the server on localhost port 8000 and log any errors
-	log.Println("http server started on :8000")
+	Log.Println("http server started on :8000")
 	err := http.ListenAndServe(":8000", r)
 	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
+		Log.Fatal("ListenAndServe: ", err)
 	}
 }
 
@@ -71,7 +73,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	// Upgrade initial GET request to a websocket
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Fatal(err)
+		Log.Fatal(err)
 	}
 	// Make sure we close the connection when the function returns
 	defer ws.Close()
@@ -84,7 +86,7 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		// Read in a new message as JSON and map it to a Message object
 		err := ws.ReadJSON(&msg)
 		if err != nil {
-			log.Printf("error: %v", err)
+			Log.Printf("error: %v", err)
 			authModule.Disconnect(ws)
 			break
 		}
@@ -122,7 +124,7 @@ func processAuthRequest(wsMsg WebSocketMessage) {
 		return
 	}
 	if authModule.Authenticate(wsMsg.fromWs, request) {
-		authModule.SendSuccessResponse(wsMsg.fromWs, roomsManager.GetRoomNames())
+		authModule.SendSuccessResponse(wsMsg.fromWs, roomsManager.GetRoomStats())
 	} else {
 		authModule.SendRejectResponse(wsMsg.fromWs)
 	}

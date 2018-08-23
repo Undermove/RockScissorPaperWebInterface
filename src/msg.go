@@ -17,9 +17,9 @@ type AuthRequest struct {
 
 // Define our message object
 type AuthResponse struct {
-	IsRegistred  bool     `json:"isRegistred"`
-	RejectReason string   `json:"rejectReason"`
-	RoomsList    []string `json:"roomsList"`
+	IsRegistred  bool           `json:"isRegistred"`
+	RejectReason string         `json:"rejectReason"`
+	RoomsList    map[string]int `json:"roomsList"`
 }
 
 // Define our message object
@@ -29,9 +29,9 @@ type CreateRoomRequest struct {
 
 // Define our message object
 type CreateRoomResponse struct {
-	IsCreated    bool   `json:"isCreated"`
-	RoomName     string `json:"roomName"`
-	RejectReason string `json:"rejectReason"`
+	IsCreated    bool           `json:"isCreated"`
+	RoomName     map[string]int `json:"roomName"`
+	RejectReason string         `json:"rejectReason"`
 }
 
 type TurnRequest struct {

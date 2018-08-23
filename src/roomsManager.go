@@ -18,6 +18,16 @@ type Room struct {
 	Players [2]*Player
 }
 
+func (r *Room) GetPlayerCount() int {
+	playerCount := 0
+	for i := 0; i < 2; i++ {
+		if r.Players[i] != nil {
+			playerCount++
+		}
+	}
+	return playerCount
+}
+
 func (r *Room) TryGetOtherPlayer(currentPlayerName string) (bool, *Player) {
 	for i := 0; i < 2; i++ {
 		if r.Players[i] != nil && r.Players[i].Name != currentPlayerName {
@@ -76,12 +86,11 @@ func NewRoomsManager(auth *AuthModule) *RoomsManager {
 	}
 }
 
-func (rm *RoomsManager) GetRoomNames() []string {
-	// Can this be done better?
-	roomsList := make([]string, len(rm.Rooms))
+func (rm *RoomsManager) GetRoomStats() map[string]int {
+	roomsList := make(map[string]int, len(rm.Rooms))
 	idx := 0
 	for _, value := range rm.Rooms {
-		roomsList[idx] = value.Name
+		roomsList[value.Name] = value.GetPlayerCount()
 		idx++
 	}
 
@@ -90,10 +99,11 @@ func (rm *RoomsManager) GetRoomNames() []string {
 
 func (rm *RoomsManager) SendResponse(isSuccess bool, roomName string, w *websocket.Conn) {
 	var response CreateRoomResponse
-
+	roomsList := make(map[string]int, 1)
+	roomsList[roomName] = rm.Rooms[roomName].GetPlayerCount()
 	if isSuccess {
 		response = CreateRoomResponse{
-			RoomName:  roomName,
+			RoomName:  roomsList,
 			IsCreated: true,
 		}
 	} else {
@@ -210,7 +220,8 @@ func (rm *RoomsManager) EnterRoom(ws *websocket.Conn, roomName string) bool {
 }
 
 func (rm *RoomsManager) LeaveRoom(ws *websocket.Conn, username string) bool {
-	if _, ok := rm.ConnToRooms[ws]; ok {
+	if room, ok := rm.ConnToRooms[ws]; ok {
+		rm.SendPlayerLeftNotification(room.Name, ws)
 		rm.ConnToRooms[ws].LeaveRoom(username)
 		delete(rm.ConnToRooms, ws)
 	}

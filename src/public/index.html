@@ -16,7 +16,7 @@
     <header>
         <nav>
             <div class="nav-wrapper blue-grey darken-3">
-                <a class="brand-logo center">Rock Scissors Paper</a>
+                <a class="brand-logo center">Rock Scissors Paper Online</a>
             </div>
         </nav>
     </header>
@@ -30,9 +30,9 @@
                         <h4>Rooms List</h4>
                     </a>
                     <ul id="rooms-list" class="collection left">
-                        <li class="collection-item" v-for="(room, index) in rooms" :key="index" @click="enterRoom(room)" title="Click to enter">
-                            <div>Room: {{room}}
-                                <br> players: 2/2
+                        <li class="collection-item" v-for="(room, index) in rooms" :key="index" @click="enterRoom(room.name)" title="Click to enter">
+                            <div>Room: {{room.name}}
+                                <br> players: {{room.players}}/2
                                 <a href="#!" class="secondary-content">
                                     <i class="material-icons">meeting_room</i>
                                 </a>
@@ -91,15 +91,25 @@
                     <a class="collection-header">
                         <h4>Your Choise</h4>
                     </a>
-                    <a class="btn-floating btn-large waves-effect waves-light red">
-                        <i class="fa fa-hand-scissors-o" @click="turn('Scissors')"></i>
-                    </a>
-                    <a class="btn-floating btn-large waves-effect waves-light red">
-                        <i class="fa fa-hand-rock-o" @click="turn('Rock')"></i>
-                    </a>
-                    <a class="btn-floating btn-large waves-effect waves-light red">
-                        <i class="fa fa-hand-paper-o" @click="turn('Paper')"></i>
-                    </a>
+                    <div v-if="!isTurned">
+                        <a class="btn-floating btn-large waves-effect waves-light blue-grey darken-3">
+                            <i class="fa fa-hand-scissors-o" @click="turn('Scissors')"></i>
+                        </a>
+                        <a class="btn-floating btn-large waves-effect waves-light blue-grey darken-3">
+                            <i class="fa fa-hand-rock-o" @click="turn('Rock')"></i>
+                        </a>
+                        <a class="btn-floating btn-large waves-effect waves-light blue-grey darken-3">
+                            <i class="fa fa-hand-paper-o" @click="turn('Paper')"></i>
+                        </a>
+                    </div>
+                    <div v-if="isTurned">
+                        <a class="header center">
+                            <h4>Waiting for opponent turn</h4>
+                        </a>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col s2"></div>
                 <div class="col s2">
@@ -109,9 +119,17 @@
                     <a class="collection-header">
                         <h4>Enemy Choise</h4>
                     </a>
-                    <a class="btn-floating btn-large waves-effect waves-light red">
-                        <i class="fa fa-question"></i>
-                    </a>
+                    <div v-if="isOpponentTurned">
+                        Opponent made his choice. Your turn!
+                    </div>
+                    <div v-if="!isOpponentTurned">
+                        <a class="header center">
+                            <h4>Opponent thinking!</h4>
+                        </a>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row" v-if="!isRoomFull">
@@ -122,7 +140,7 @@
                 <div class="progress">
                     <div class="indeterminate"></div>
                 </div>
-            </div>
+            </div>l
         </div>
     </main>
 

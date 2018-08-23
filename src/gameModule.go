@@ -78,41 +78,31 @@ func (g *GameModule) Turn(w *websocket.Conn, request TurnRequest) *TurnResponse 
 }
 
 func (g *GameModule) SendTurnResponse(resp TurnResponse, w *websocket.Conn) {
-
-	if resp.Result != "" {
-		data, _ := json.Marshal(resp)
-		var forOtherPlayer = TurnResponse{
-			Result:             resp.Result,
-			OtherPlayerChoise:  resp.OtherPlayerChoise,
-			IsApplied:          true,
-			CurrentPlayerScore: resp.OtherPlayerScore,
-			OtherPlayerScore:   resp.CurrentPlayerScore,
-		}
-		dataForOther, _ := json.Marshal(forOtherPlayer)
-
-		message := Message{
-			Type: "TurnResponse",
-			Raw:  data,
-		}
-
-		messageForOther := Message{
-			Type: "TurnResponse",
-			Raw:  dataForOther,
-		}
-
-		room := g.roomsManager.ConnToRooms[w]
-		_, otherPlayer := room.TryGetOtherPlayer(g.authModule.Clients[w])
-
-		// send message to all players
-		g.authModule.AuthClients[otherPlayer.Name].WriteJSON(messageForOther)
-		w.WriteJSON(message)
-		return
-	}
-
 	data, _ := json.Marshal(resp)
+	var forOtherPlayer = TurnResponse{
+		Result:             resp.Result,
+		OtherPlayerChoise:  "OtherPlayerTurned",
+		IsApplied:          true,
+		CurrentPlayerScore: resp.OtherPlayerScore,
+		OtherPlayerScore:   resp.CurrentPlayerScore,
+	}
+	dataForOther, _ := json.Marshal(forOtherPlayer)
+
 	message := Message{
 		Type: "TurnResponse",
 		Raw:  data,
 	}
+
+	messageForOther := Message{
+		Type: "TurnResponse",
+		Raw:  dataForOther,
+	}
+
+	room := g.roomsManager.ConnToRooms[w]
+	_, otherPlayer := room.TryGetOtherPlayer(g.authModule.Clients[w])
+
+	// send message to all players
+	g.authModule.AuthClients[otherPlayer.Name].WriteJSON(messageForOther)
 	w.WriteJSON(message)
+	return
 }
